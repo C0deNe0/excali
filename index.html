@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Excali</title>
+    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #121212;
+        margin: 0;
+        overflow: hidden;
+        font-family: "Patrick Hand", cursive;
+      }
+      /* Custom scrollbar for textarea */
+      textarea::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+
+      /* Animations for Landing Page */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(5deg);
+        }
+      }
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes fade-in {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .animate-fade-in {
+        animation: fade-in 0.3s ease-out forwards;
+      }
+
+      /* Custom underline for hero text */
+      .scribble-underline {
+        text-decoration: underline;
+        text-decoration-color: rgba(236, 72, 153, 0.5);
+        text-decoration-style: wavy;
+        text-decoration-thickness: 3px;
+        text-underline-offset: 6px;
+      }
+    </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@^19.2.3",
+          "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+          "react/": "https://esm.sh/react@^19.2.3/",
+          "lucide-react": "https://esm.sh/lucide-react@^0.561.0",
+          "zustand": "https://esm.sh/zustand@^5.0.9",
+          "konva": "https://esm.sh/konva@^10.0.12",
+          "react-konva": "https://esm.sh/react-konva@^19.2.1",
+          "perfect-freehand": "https://esm.sh/perfect-freehand@^1.2.0"
+        }
+      }
+    </script>
+    <link rel="stylesheet" href="/index.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
