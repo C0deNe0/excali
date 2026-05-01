@@ -2,8 +2,27 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Stage, Layer, Rect, Circle, Line, Text, Path, Transformer } from 'react-konva';
 import Konva from 'konva';
 import { getStroke } from 'perfect-freehand';
+import rough from 'roughjs';
 import { useCanvasStore } from '../store/useCanvasStore';
 import { Shape } from '../types';
+
+const roughGenerator = rough.generator();
+
+const getSvgPathFromRough = (drawable: any) => {
+  const paths: string[] = [];
+  drawable.sets.forEach((set: any) => {
+    set.ops.forEach((op: any) => {
+      if (op.op === 'move') {
+        paths.push(`M${op.data[0]} ${op.data[1]}`);
+      } else if (op.op === 'bcurveTo') {
+        paths.push(`C${op.data[0]} ${op.data[1]}, ${op.data[2]} ${op.data[3]}, ${op.data[4]} ${op.data[5]}`);
+      } else if (op.op === 'lineTo') {
+        paths.push(`L${op.data[0]} ${op.data[1]}`);
+      }
+    });
+  });
+  return paths.join(' ');
+};
 
 
 
@@ -376,13 +395,25 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({ stageRef }) => {
             };
 
             if (shape.type === 'rect') {
-                return <Rect {...commonProps} width={shape.width} height={shape.height} cornerRadius={2} />;
+                let shapeD = "M0 0";
+                if (shape.width !== 0 && shape.height !== 0) {
+                    shapeD = getSvgPathFromRough(roughGenerator.rectangle(0, 0, shape.width, shape.height, { strokeWidth: shape.strokeWidth, roughness: 1.5 }));
+                }
+                return <Path {...commonProps} data={shapeD} fillEnabled={false} />;
             }
             if (shape.type === 'circle') {
-                return <Circle {...commonProps} radius={shape.radius} />;
+                let shapeD = "M0 0";
+                if (shape.radius !== 0) {
+                    shapeD = getSvgPathFromRough(roughGenerator.circle(0, 0, shape.radius * 2, { strokeWidth: shape.strokeWidth, roughness: 1.5 }));
+                }
+                return <Path {...commonProps} data={shapeD} fillEnabled={false} />;
             }
             if (shape.type === 'line') {
-                return <Line {...commonProps} points={shape.points} lineCap="round" lineJoin="round" />;
+                let shapeD = "M0 0";
+                if (shape.points && shape.points.length >= 4) {
+                    shapeD = getSvgPathFromRough(roughGenerator.line(shape.points[0], shape.points[1], shape.points[2], shape.points[3], { strokeWidth: shape.strokeWidth, roughness: 1.5 }));
+                }
+                return <Path {...commonProps} data={shapeD} fillEnabled={false} />;
             }
             if (shape.type === 'pencil') {
                 const stroke = getStroke(shape.points, {
@@ -422,17 +453,19 @@ const CanvasBoard: React.FC<CanvasBoardProps> = ({ stageRef }) => {
             }
             if (shape.type === 'database' || shape.type === 'server' || shape.type === 'cloud' || shape.type === 'keyboard') {
                 const pathData = SHAPE_PATHS[shape.type];
+                const shapeD = getSvgPathFromRough(roughGenerator.path(pathData, { strokeWidth: shape.strokeWidth, roughness: 1.5 }));
                 // Scale calculations: assuming base SVG is 100x100
                 return (
                     <Path
                         {...commonProps}
-                        data={pathData}
+                        data={shapeD}
                         width={shape.width} // Stores width but path needs scale
                         height={shape.height}
                         scaleX={shape.width / 100}
                         scaleY={shape.height / 100}
                         lineJoin="round"
                         lineCap="round"
+                        fillEnabled={false}
                     />
                 );
             }
